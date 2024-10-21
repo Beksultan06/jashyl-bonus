@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from apps.users.models import User
 from django.contrib.auth import authenticate
-from rest_framework.authtoken.models import Token
 
 class UserRegister(serializers.ModelSerializer):
     password = serializers.CharField(
