@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     #rest
     "rest_framework",
     'rest_framework.authtoken',
+    'rest_framework_simplejwt',
 
     #apps
     "apps.base",
@@ -50,9 +51,12 @@ INSTALLED_APPS = [
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',
+    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
 MIDDLEWARE = [
@@ -157,40 +161,78 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 #jazzmin
-JAZZMIN_SETTINGS = {
-    "site_title": "Jashyl-Bonus",  # Заголовок админ-панели
-    "site_header": "Jashyl-Bonus",  # Заголовок на экране входа
-    "site_brand": "Jashyl-Bonus",  # Бренд в верхней части админ-панели
-    "welcome_sign": "Добро пожаловать в Jashyl-Bonus",  # Приветственное сообщение
-    "site_title": "Jashyl-Bonus",  # Заголовок админ-панели
-    "site_header": "Jashyl-Bonus",  # Заголовок на экране входа
-    "site_brand": "Jashyl-Bonus",  # Бренд в верхней части админ-панели
-    "welcome_sign": "Добро пожаловать в Jashyl-Bonus",  # Приветственное сообщение
-    "search_model": ["auth.User", "blog.Post"],  # Модели, доступные для поиска
-    "topmenu_links": [
-        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
-    ],
-    "show_sidebar": True,
-    "changeform_format": "horizontal_tabs",
-    "header_classes": "navbar-dark bg-dark",  # Темный фон верхней части админ-панели
-    "header_color": "#000000",  # Черный цвет верхней части админ-панели
-    "dark_mode_theme": True,  # Включить темный режим
-    "show_language_chooser": True,  # Включить выбор языка в админ-панели
-    "custom_css": None,  # Путь к пользовательскому CSS-файлу (если нужен)
-    "show_ui_builder": True,  # Показать UI Builder
-    "menu": [
-        {
-            "app": "index",  # Имя вашего приложения Django
-            "name": "Основные параметры",  # Имя модели
-            "icon": "fa fa-cogs",  # Иконка для меню
-            "models": [
-                {
-                    "name": "Первая модель",  # Имя вашей модели
-                    "icon": "fa fa-cog",  # Иконка для модели
-                    "model": "index.Settings",  # Имя модели в формате "app_label.model_name"
-                },
-                # Добавьте другие модели, если необходимо
-            ],
-        },
-    ],
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": True,
+    "brand_small_text": False,
+    "brand_colour": "navbar-success",
+    "accent": "accent-success",
+    "navbar": "navbar-success navbar-dark",
+    "no_navbar_border": True,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": True,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-light-success",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": True,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": True,
+    "theme": "default",
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-outline-warning",
+        "danger": "btn-outline-danger",
+        "success": "btn-success"
+    },
+    "actions_sticky_top": False
+}
+
+# jwt
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": SECRET_KEY,
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+
+    "JTI_CLAIM": "jti",
+
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
