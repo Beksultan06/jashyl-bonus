@@ -3,11 +3,12 @@ from rest_framework import mixins
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework import status
+from django.shortcuts import render, redirect
 
 from apps.users.models import User
 from apps.users.serializers import UserLoginSerializer, UserRegister
 from apps.users.signals import add_user_to_default_group
-# Create your views here.
+
 
 class UserAPI(GenericViewSet,
               mixins.ListModelMixin,
@@ -20,9 +21,9 @@ class UserAPI(GenericViewSet,
 
     def perform_create(self, serializer):
         user = serializer.save()
-        add_user_to_default_group(user)
+        # Вызываем сигнал как обычную функцию с нужными параметрами
+        add_user_to_default_group(instance=user, created=True)
         return user
-
 
 class LoginViewSet(mixins.CreateModelMixin, GenericViewSet):
     serializer_class = UserLoginSerializer
@@ -40,3 +41,15 @@ class LoginViewSet(mixins.CreateModelMixin, GenericViewSet):
             'user_id': user.id,
             'email': user.email
         }, status=status.HTTP_200_OK)
+
+
+def register_page(request):
+    return render(request, 'users/register.html')
+
+
+def login_page(request):
+    return render(request, 'users/login.html')
+
+
+def after_login(request):
+    return redirect('/notifications/')

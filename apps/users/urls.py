@@ -6,9 +6,8 @@ from rest_framework_simplejwt.views import (
 )
 from apps.users.views import LoginViewSet, UserAPI
 
-
 router = DefaultRouter()
-router.register(r"register", UserAPI, basename='api-register-email')
+router.register(r'register', UserAPI, basename='api-register')
 router.register(r'login', LoginViewSet, basename='api-login')
 
 urlpatterns = [

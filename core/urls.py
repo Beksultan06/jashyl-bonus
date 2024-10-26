@@ -5,13 +5,20 @@ from django.conf import settings
 
 # apps
 from apps.notification.views import notifications_page
+from apps.users.views import login_page, register_page
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # apps
     path("api/v1/", include("apps.base.urls")),
     path("api/v1/users/", include("apps.users.urls")),
     path("api/v1/notification/", include("apps.notification.urls")),
+
+    # views
     path('notifications/', notifications_page, name='notifications_page'),
+    path('register/', register_page, name='register'),
+    path('login/', login_page, name='login'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

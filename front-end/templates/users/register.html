@@ -8,35 +8,28 @@
 <body>
     <h1>Регистрация</h1>
 
-    <form id="registerForm">
-        <label>Имя пользователя:</label>
-        <input type="text" id="username" required><br>
-
-        <label>Имя:</label>
-        <input type="text" id="first_name" required><br>
-
-        <label>Фамилия:</label>
-        <input type="text" id="last_name" required><br>
-
-        <label>Email:</label>
-        <input type="email" id="email" required><br>
-
-        <label>Телефон:</label>
-        <input type="text" id="phone_number" required><br>
-
-        <label>Пароль:</label>
-        <input type="password" id="password" required><br>
-
-        <label>Подтвердите пароль:</label>
-        <input type="password" id="confirm_password" required><br>
-
-        <button type="submit">Зарегистрироваться</button>
+    <form id="registerForm" method="POST">
+        <label for="username">Username:</label>
+        <input type="text" name="username" id="username" required>
+        <label for="email">Email:</label>
+        <input type="email" name="email" id="email" required>
+        <label for="first_name">First Name:</label>
+        <input type="text" name="first_name" id="first_name" required>
+        <label for="last_name">Last Name:</label>
+        <input type="text" name="last_name" id="last_name" required>
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" name="phone_number" id="phone_number" required>
+        <label for="password">Password:</label>
+        <input type="password" name="password" id="password" required>
+        <label for="confirm_password">Confirm Password:</label>
+        <input type="password" name="confirm_password" id="confirm_password" required>
+        <button type="submit">Register</button>
     </form>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            
+
             const data = {
                 username: document.getElementById('username').value,
                 first_name: document.getElementById('first_name').value,
@@ -47,23 +40,36 @@
                 confirm_password: document.getElementById('confirm_password').value
             };
 
-            fetch('http://127.0.0.1:8000/api/v1/register/', {
+            fetch('http://127.0.0.1:8000/api/v1/users/register/', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
+            .then(response => {
+                // Проверяем, является ли ответ успешным
+                if (!response.ok) {
+                    return response.json().then(errorData => {
+                        console.error('Ошибка:', errorData);
+                        alert('Ошибка регистрации: ' + JSON.stringify(errorData));
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.status === 'success') {
+                if (data && data.id) {
                     alert('Регистрация успешна!');
-                    window.location.href = '/login.html';
+                    window.location.href = '/login/';
                 } else {
-                    alert(JSON.stringify(data));
+                    alert('Ошибка регистрации: ' + JSON.stringify(data));
                 }
             })
-            .catch(error => console.error('Ошибка:', error));
+            .catch(error => {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка. Пожалуйста, попробуйте снова.');
+            });
         });
     </script>
 </body>
