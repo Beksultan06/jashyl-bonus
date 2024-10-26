@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Уведомления</title>
 </head>
+
 <body>
     <h1>Уведомления</h1>
 
     <ul id="notifications">
-        <!-- Уведомления будут добавляться здесь -->
+        <!-- Уведомления будут добавляться здесь динамически через WebSocket -->
     </ul>
 
     <script>
@@ -26,28 +28,41 @@
             console.log("WebSocket подключен.");
         };
 
-        notificationSocket.onmessage = function(e) {
-        try {
-            console.log("Получено сообщение от WebSocket:", e.data);
-            const data = JSON.parse(e.data);
-            const message = data.message;
+        notificationSocket.onmessage = function (e) {
+            try {
+                const data = JSON.parse(e.data);
+                console.log("Получено сообщение от WebSocket:", data);
 
-            console.log("Сообщение:", message);
-
-            const notificationsList = document.getElementById("notifications");
-            const newNotification = document.createElement("li");
-            newNotification.textContent = message;
-            notificationsList.appendChild(newNotification);
+                if (data.type === 'notification') {
+                    // Добавление нового уведомления
+                    const notificationsList = document.getElementById("notifications");
+                    const newNotification = document.createElement("li");
+                    newNotification.id = `notification-${data.notification_id}`;
+                    newNotification.textContent = data.message;
+                    notificationsList.appendChild(newNotification);
+                    console.log(`Добавлено уведомление с ID ${data.notification_id}`);
+                } else if (data.type === 'delete') {
+                    // Удаление уведомления
+                    const notificationId = data.notification_id;
+                    console.log(`Удаление уведомления с ID ${notificationId}`);
+                    const notificationElement = document.getElementById(`notification-${notificationId}`);
+                    if (notificationElement) {
+                        notificationElement.remove();
+                        console.log(`Уведомление с ID ${notificationId} удалено.`);
+                    } else {
+                        console.warn(`Уведомление с ID ${notificationId} не найдено.`);
+                    }
+                }
             } catch (error) {
                 console.error("Ошибка обработки сообщения:", error);
             }
         };
 
-        notificationSocket.onerror = function(e) {
+        notificationSocket.onerror = function (e) {
             console.error('Ошибка WebSocket:', e);
         };
 
-        notificationSocket.onclose = function(e) {
+        notificationSocket.onclose = function (e) {
             console.warn('WebSocket закрыт:', e.code, e.reason);
             if (e.code !== 1000) {
                 alert('Соединение с сервером было закрыто. Перезагрузите страницу.');
@@ -55,4 +70,5 @@
         };
     </script>
 </body>
+
 </html>

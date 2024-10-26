@@ -32,3 +32,29 @@ class NotificationAdmin(admin.ModelAdmin):
             logger.info("Уведомление отправлено успешно.")
         except Exception as e:
             logger.error(f"Ошибка при отправке уведомления: {str(e)}")
+
+    def delete_model(self, request, obj):
+        notification_id = obj.id
+        super().delete_model(request, obj)
+
+        channel_layer = get_channel_layer()
+        if channel_layer is None:
+            logger.error("Канал уведомлений не настроен.")
+            return
+
+        try:
+            logger.info(f"Отправка сообщения об удалении уведомления с ID {notification_id} через канал.")
+            async_to_sync(channel_layer.group_send)(
+                "notifications",
+                {
+                    "type": "delete_notification",
+                    "notification_id": notification_id,
+                }
+            )
+            logger.info(f"Сообщение об удалении уведомления с ID {notification_id} отправлено успешно.")
+        except Exception as e:
+            logger.error(f"Ошибка при отправке сообщения об удалении: {str(e)}")
+
+
+
+
