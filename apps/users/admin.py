@@ -3,6 +3,6 @@ from apps.users.models import User
 # Register your models here.
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'email', 'phone_number']
+    list_display = ['username', 'email', 'phone_number', 'is_staff']
     list_filter = ['username', 'email', 'phone_number']
     search_fields = ['username', 'email', 'phone_number']

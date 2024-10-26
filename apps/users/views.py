@@ -6,6 +6,7 @@ from rest_framework import status
 
 from apps.users.models import User
 from apps.users.serializers import UserLoginSerializer, UserRegister
+from apps.users.signals import add_user_to_default_group
 # Create your views here.
 
 class UserAPI(GenericViewSet,
@@ -17,15 +18,22 @@ class UserAPI(GenericViewSet,
     queryset = User.objects.all()
     serializer_class = UserRegister
 
+    def perform_create(self, serializer):
+        user = serializer.save()
+        add_user_to_default_group(user)
+        return user
 
-class LoginViewSet(mixins.CreateModelMixin,
-                    GenericViewSet):
+
+class LoginViewSet(mixins.CreateModelMixin, GenericViewSet):
     serializer_class = UserLoginSerializer
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
+
+        add_user_to_default_group(user)
+
         token, created = Token.objects.get_or_create(user=user)
         return Response({
             'token': token.key,

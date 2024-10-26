@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Уведомления</title>
+</head>
+<body>
+    <h1>Уведомления</h1>
+
+    <ul id="notifications">
+        <!-- Уведомления будут добавляться здесь -->
+    </ul>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('Вы не авторизованы');
+            window.location.href = '/login.html'; // Перенаправляем на страницу логина, если нет токена
+        }
+
+        // Подключение к WebSocket
+        const wsUrl = `ws://${window.location.host}/ws/notifications/`;
+        const notificationSocket = new WebSocket(wsUrl);
+
+        // Когда WebSocket подключен
+        notificationSocket.onopen = function () {
+            console.log("WebSocket подключен.");
+        };
+
+        // Когда приходит уведомление от WebSocket
+        notificationSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const message = data.message;
+
+            console.log("Получено уведомление:", message);
+
+            // Добавляем уведомление в список
+            const notificationsList = document.getElementById("notifications");
+            const newNotification = document.createElement("li");
+            newNotification.textContent = message;
+            notificationsList.appendChild(newNotification);
+        };
+
+        // Ошибка при подключении
+        notificationSocket.onerror = function(e) {
+            console.error('Ошибка WebSocket:', e);
+        };
+
+        // Обработка закрытия соединения
+        notificationSocket.onclose = function(e) {
+            console.warn('WebSocket закрыт:', e);
+        };
+    </script>
+</body>
+</html>
