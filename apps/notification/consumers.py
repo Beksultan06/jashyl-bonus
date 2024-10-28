@@ -42,4 +42,3 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             logger.info("Сообщение об удалении отправлено через WebSocket.")
         except Exception as e:
             logger.error(f"Ошибка при отправке сообщения об удалении: {str(e)}")
-

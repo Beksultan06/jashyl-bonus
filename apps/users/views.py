@@ -21,7 +21,6 @@ class UserAPI(GenericViewSet,
 
     def perform_create(self, serializer):
         user = serializer.save()
-        # Вызываем сигнал как обычную функцию с нужными параметрами
         add_user_to_default_group(instance=user, created=True)
         return user
 

@@ -17,7 +17,7 @@ class NotificationAdminViewSet(viewsets.ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAdminUser]
 
-    async def perform_create(self, serializer):
+    def perform_create(self, serializer):
         logger.info("Начало создания уведомления.")
         notification = serializer.save()
         logger.info(f"Уведомление создано: {notification.message}")
@@ -32,7 +32,7 @@ class NotificationAdminViewSet(viewsets.ModelViewSet):
 
         try:
             logger.info("Отправка уведомления через канал.")
-            await channel_layer.group_send(
+            async_to_sync(channel_layer.group_send)(
                 "notifications",
                 {
                     "type": "send_notification",

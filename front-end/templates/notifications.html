@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Уведомления</title>
+    <link rel="stylesheet" href="../static/css/style.css">
 </head>
 
 <body>
@@ -34,7 +35,6 @@
                 console.log("Получено сообщение от WebSocket:", data);
 
                 if (data.type === 'notification') {
-                    // Добавление нового уведомления
                     const notificationsList = document.getElementById("notifications");
                     const newNotification = document.createElement("li");
                     newNotification.id = `notification-${data.notification_id}`;
@@ -42,7 +42,6 @@
                     notificationsList.appendChild(newNotification);
                     console.log(`Добавлено уведомление с ID ${data.notification_id}`);
                 } else if (data.type === 'delete') {
-                    // Удаление уведомления
                     const notificationId = data.notification_id;
                     console.log(`Удаление уведомления с ID ${notificationId}`);
                     const notificationElement = document.getElementById(`notification-${notificationId}`);
